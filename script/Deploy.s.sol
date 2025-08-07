@@ -1,9 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.30;
 
 import {Script, console} from "forge-std/Script.sol";
 import {Dispatcher7702} from "../src/dispatcher/Dispatcher7702.sol";
+import {CounterHook} from "../src/hooks/CounterHook.sol";
+import {TokenHook} from "../src/hooks/TokenHook.sol";
 import {BatchCallsHook} from "../src/hooks/BatchCallsHook.sol";
+import {AccessControlHook} from "../src/hooks/AccessControlHook.sol";
 
 contract DeployScript is Script {
     function run() external {
@@ -14,18 +17,31 @@ contract DeployScript is Script {
         Dispatcher7702 dispatcher = new Dispatcher7702();
         console.log("Dispatcher7702 deployed at:", address(dispatcher));
 
-        // Deploy batch-calls hook
+        // Deploy all hooks
+        CounterHook counterHook = new CounterHook();
+        TokenHook tokenHook = new TokenHook();
         BatchCallsHook batchHook = new BatchCallsHook();
+        AccessControlHook accessHook = new AccessControlHook();
+
+        console.log("CounterHook deployed at:", address(counterHook));
+        console.log("TokenHook deployed at:", address(tokenHook));
         console.log("BatchCallsHook deployed at:", address(batchHook));
+        console.log("AccessControlHook deployed at:", address(accessHook));
 
-        // Register hook in dispatcher
-        bytes4 selector = BatchCallsHook.batch.selector;
-        console.log("Batch selector:", vm.toString(selector));
-
-        // For demonstration using vm.prank, but in reality this would be a self-call
+        // Register hooks in dispatcher (demonstration - in reality these would be self-calls)
         vm.prank(address(dispatcher));
-        dispatcher.setHook(selector, address(batchHook));
-        console.log("Hook registered successfully");
+        dispatcher.setHook(CounterHook.increment.selector, address(counterHook));
+
+        vm.prank(address(dispatcher));
+        dispatcher.setHook(TokenHook.transfer.selector, address(tokenHook));
+
+        vm.prank(address(dispatcher));
+        dispatcher.setHook(BatchCallsHook.batch.selector, address(batchHook));
+
+        vm.prank(address(dispatcher));
+        dispatcher.setHook(AccessControlHook.deposit.selector, address(accessHook));
+
+        console.log("All hooks registered successfully");
 
         vm.stopBroadcast();
     }
