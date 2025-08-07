@@ -10,8 +10,7 @@ contract BatchCallsHook {
         results = new bytes[](len);
 
         for (uint256 i; i < len; ++i) {
-            (bool ok, bytes memory ret) =
-                calls[i].to.call{value: calls[i].value}(calls[i].data);
+            (bool ok, bytes memory ret) = calls[i].to.call{value: calls[i].value}(calls[i].data);
             if (!ok) {
                 // bubble-up revert data
                 assembly {
@@ -21,4 +20,4 @@ contract BatchCallsHook {
             results[i] = ret;
         }
     }
-} 
+}

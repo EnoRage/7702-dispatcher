@@ -21,7 +21,7 @@ contract DeployScript is Script {
         // Register hook in dispatcher
         bytes4 selector = BatchCallsHook.batch.selector;
         console.log("Batch selector:", vm.toString(selector));
-        
+
         // For demonstration using vm.prank, but in reality this would be a self-call
         vm.prank(address(dispatcher));
         dispatcher.setHook(selector, address(batchHook));
@@ -29,4 +29,4 @@ contract DeployScript is Script {
 
         vm.stopBroadcast();
     }
-} 
+}

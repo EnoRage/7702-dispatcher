@@ -13,8 +13,7 @@ contract Dispatcher7702 {
 
     /// Permanent storage slot for "replacing" msg.sender (optional).
     /// Any hook can write address(this) there before internal checks.
-    bytes32 internal constant _SENDER_SLOT =
-        bytes32(uint256(keccak256("eip7702.msgsender")) - 1);
+    bytes32 internal constant _SENDER_SLOT = bytes32(uint256(keccak256("eip7702.msgsender")) - 1);
 
     /* --------------------------------------------------------------------- */
     /*                               Errors                                   */
@@ -71,14 +70,7 @@ contract Dispatcher7702 {
             let ptr := mload(0x40)
             calldatacopy(ptr, 0, calldatasize())
 
-            ok := delegatecall(
-                gas(),
-                hook,
-                ptr,
-                calldatasize(),
-                0,
-                0
-            )
+            ok := delegatecall(gas(), hook, ptr, calldatasize(), 0, 0)
 
             let size := returndatasize()
             returndatacopy(ptr, 0, size)
@@ -90,4 +82,4 @@ contract Dispatcher7702 {
     }
 
     receive() external payable {}
-} 
+}

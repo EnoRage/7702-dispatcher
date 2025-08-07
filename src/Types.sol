@@ -5,4 +5,4 @@ struct Call {
     address to;
     uint256 value;
     bytes data;
-} 
+}
