@@ -117,7 +117,7 @@ contract Dispatcher7702Test is Test {
         calls[0] =
             Call({to: address(mockTarget), value: 0, data: abi.encodeWithSelector(MockTarget.revertFunction.selector)});
 
-        // Execution should fail
+        // Execution should fail - the entire batch should revert when any call reverts
         bytes memory callData = abi.encodeWithSelector(BatchCallsHook.batch.selector, calls);
         vm.expectRevert("Test revert");
         address(dispatcher).call(callData);

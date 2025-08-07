@@ -157,7 +157,7 @@ contract StorageIsolationTest is Test {
         assertEq(balance2, 500, "Address 0x456 balance should be 500");
     }
 
-    function test_StorageKeyUniqueness() public {
+    function test_StorageKeyUniqueness() public view {
         // Test that different hooks have different storage keys
         bytes32 batchKey = batchHook.STORAGE_KEY();
         bytes32 counterKey = counterHook.STORAGE_KEY();

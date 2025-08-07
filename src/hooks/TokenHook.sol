@@ -1,16 +1,19 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.30;
 
-contract TokenHook {
-    bytes32 public immutable STORAGE_KEY;
+import {BaseHook} from "./base/BaseHook.sol";
 
-    constructor() {
-        STORAGE_KEY = keccak256(abi.encodePacked(type(TokenHook).name));
+contract TokenHook is BaseHook {
+    constructor() BaseHook() {
         Storage storage s = _s();
         s.owner = msg.sender;
         s.name = "Test Token";
         s.symbol = "TEST";
         s.decimals = 18;
+    }
+
+    function _getHookName() internal pure override returns (string memory) {
+        return "TokenHook";
     }
 
     struct Storage {

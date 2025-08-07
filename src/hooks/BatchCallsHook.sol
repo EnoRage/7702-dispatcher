@@ -1,15 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.30;
 
+import {BaseHook} from "./base/BaseHook.sol";
 import {Call} from "../utils/Types.sol";
 
-contract BatchCallsHook {
-    bytes32 public immutable STORAGE_KEY;
-
-    constructor() {
-        STORAGE_KEY = keccak256(abi.encodePacked(type(BatchCallsHook).name));
-    }
-
+contract BatchCallsHook is BaseHook {
     struct Storage {
         uint256 callCount;
         address sender;
@@ -19,6 +14,12 @@ contract BatchCallsHook {
     }
 
     mapping(bytes32 => Storage) private _storage;
+
+    constructor() BaseHook() {}
+
+    function _getHookName() internal pure override returns (string memory) {
+        return "BatchCallsHook";
+    }
 
     function _s() internal view returns (Storage storage) {
         return _storage[STORAGE_KEY];

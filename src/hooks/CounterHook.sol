@@ -1,13 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.30;
 
-contract CounterHook {
-    bytes32 public immutable STORAGE_KEY;
+import {BaseHook} from "./base/BaseHook.sol";
 
-    constructor() {
-        STORAGE_KEY = keccak256(abi.encodePacked(type(CounterHook).name));
-    }
-
+contract CounterHook is BaseHook {
     struct Storage {
         uint256 value;
         uint256 lastIncrement;
@@ -15,6 +11,12 @@ contract CounterHook {
     }
 
     mapping(bytes32 => Storage) private _storage;
+
+    constructor() BaseHook() {}
+
+    function _getHookName() internal pure override returns (string memory) {
+        return "CounterHook";
+    }
 
     function _s() internal view returns (Storage storage) {
         return _storage[STORAGE_KEY];
