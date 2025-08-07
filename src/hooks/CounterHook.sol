@@ -1,8 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.30;
 
 contract CounterHook {
-    bytes32 public immutable STORAGE_KEY = keccak256("CounterHook");
+    bytes32 public immutable STORAGE_KEY;
+
+    constructor() {
+        STORAGE_KEY = keccak256(abi.encodePacked(type(CounterHook).name));
+    }
 
     struct Storage {
         uint256 value;

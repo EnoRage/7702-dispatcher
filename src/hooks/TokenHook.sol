@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.30;
 
 contract TokenHook {
-    bytes32 public immutable STORAGE_KEY = keccak256("TokenHook");
+    bytes32 public immutable STORAGE_KEY;
 
     constructor() {
+        STORAGE_KEY = keccak256(abi.encodePacked(type(TokenHook).name));
         Storage storage s = _s();
         s.owner = msg.sender;
         s.name = "Test Token";

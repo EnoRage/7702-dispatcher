@@ -1,10 +1,14 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.30;
 
 import {Call} from "../utils/Types.sol";
 
 contract BatchCallsHook {
-    bytes32 public immutable STORAGE_KEY = keccak256("BatchCallsHook");
+    bytes32 public immutable STORAGE_KEY;
+
+    constructor() {
+        STORAGE_KEY = keccak256(abi.encodePacked(type(BatchCallsHook).name));
+    }
 
     struct Storage {
         uint256 callCount;
