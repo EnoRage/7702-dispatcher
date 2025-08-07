@@ -2,11 +2,11 @@
 pragma solidity ^0.8.24;
 
 import {Test} from "forge-std/Test.sol";
-import {Dispatcher7702} from "../src/Dispatcher7702.sol";
-import {BatchCallsHook} from "../src/BatchCallsHook.sol";
-import {CounterHook} from "../src/CounterHook.sol";
-import {TokenHook} from "../src/TokenHook.sol";
-import {Call} from "../src/Types.sol";
+import {Dispatcher7702} from "../src/dispatcher/Dispatcher7702.sol";
+import {BatchCallsHook} from "../src/hooks/BatchCallsHook.sol";
+import {CounterHook} from "../src/hooks/CounterHook.sol";
+import {TokenHook} from "../src/hooks/TokenHook.sol";
+import {Call} from "../src/utils/Types.sol";
 
 /// @notice Test for storage isolation between hooks using struct-based storage
 contract StorageIsolationTest is Test {

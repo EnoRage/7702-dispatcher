@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {Call} from "./Types.sol";
+import {Call} from "../utils/Types.sol";
 
 contract BatchCallsHook {
     bytes32 public immutable STORAGE_KEY = keccak256("BatchCallsHook");

@@ -2,12 +2,12 @@
 pragma solidity ^0.8.24;
 
 import {Test} from "forge-std/Test.sol";
-import {Dispatcher7702} from "../src/Dispatcher7702.sol";
-import {BatchCallsHook} from "../src/BatchCallsHook.sol";
-import {MockToken} from "../src/MockToken.sol";
-import {Reverter} from "../src/Reverter.sol";
-import {EtherSink} from "../src/EtherSink.sol";
-import {Call} from "../src/Types.sol";
+import {Dispatcher7702} from "../src/dispatcher/Dispatcher7702.sol";
+import {BatchCallsHook} from "../src/hooks/BatchCallsHook.sol";
+import {MockToken} from "../src/utils/MockToken.sol";
+import {Reverter} from "../src/utils/Reverter.sol";
+import {EtherSink} from "../src/utils/EtherSink.sol";
+import {Call} from "../src/utils/Types.sol";
 
 /// @notice Example showing how each user has their own account contract in EIP-7702
 contract UserAccountExample is Test {
