@@ -223,6 +223,61 @@ src/
     └── IHook.sol               # Hook interface
 ```
 
+## Demo
+
+### Prerequisites
+
+Before running the demo, ensure you have the following installed:
+
+- **Foundry** - Ethereum development toolkit
+  ```bash
+  curl -L https://foundry.paradigm.xyz | bash
+  foundryup
+  ```
+
+### Running the Demo
+
+The demo showcases the complete 7702 Dispatcher functionality with storage isolation and hook management.
+
+#### Quick Start
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd 7702-dispatcher
+
+# Run the demo
+./demo/run_demo.sh
+```
+
+#### What the Demo Does
+
+The demo script performs the following operations:
+
+1. **Starts Anvil** - Local Ethereum node with Prague hardfork (EIP-7702 support)
+2. **Deploys Contracts** - Dispatcher and hook contracts
+3. **Sets Up Hooks** - Configures function selectors to hook addresses
+4. **Tests Functionality** - Demonstrates storage isolation between hooks
+5. **Shows Storage Analysis** - Verifies that hooks use different storage slots
+
+#### Demo Output
+
+The demo will show:
+- Contract deployment addresses
+- Hook configuration
+- Counter increment operations
+- Token minting and balance checks
+- Storage isolation verification
+- Final state validation
+
+#### Demo Features Demonstrated
+
+- ✅ **EIP-7702 Delegation** - Attaching dispatcher code to EOA
+- ✅ **Hook Management** - Setting function selectors to hook addresses
+- ✅ **Storage Isolation** - Multiple hooks coexisting without conflicts
+- ✅ **Real Transactions** - Actual blockchain transactions with delegation
+- ✅ **Storage Analysis** - Verification of isolated storage slots
+
 ## Testing
 
 Comprehensive test coverage with 31 tests across 4 test suites:
