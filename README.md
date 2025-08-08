@@ -2,18 +2,66 @@
 
 Simple EIP-7702 dispatcher with hooks.
 
-## What is EIP-7702?
-
-EIP-7702 is a standard for modular account contracts. Instead of one big contract, you have:
-- **One dispatcher** that routes calls
-- **Multiple hooks** that do the actual work
-- **Each user gets their own account** - no shared state
 
 ## The Problem
+
+With EIP-7702 it’s now possible to make an EOA behave like a smart contract.
+It works simply: you attach a dispatcher contract to your address, and this dispatcher uses delegatecall to run code from external “hook” contracts.
+
+But there’s a catch:
+delegatecall executes the hook’s code in the storage context of your account.
+If multiple hooks use the same storage slots (e.g., slot 0), they will overwrite each other’s data — even if they are completely unrelated.
+
+Result: one piece of logic can accidentally (or maliciously) corrupt another’s state.
+
+┌──────────────────────────────┐        ┌──────────────────────────────┐
+│ 7702 Code Attached (X)       │        │ 7702 Code Attached (Y)        │				
+│ uses storage slot 0          │        │ also uses storage slot 0      │
+│ delegatecall → writes 100     │        │ delegatecall → writes 500    │
+└──────────────────────────────┘        └──────────────────────────────┘
+             │                                        │
+             └────────────── both modify ─────────────┘
+                                  ▼
+              ┌──────────────────────────────────────┐
+              │ EOA (Alice) Storage                  │
+              │ Slot 0 → ❌ overwritten (500)        │
+              │ Data from X replaced by data from Y  │
+              └──────────────────────────────────────┘
+
+
 
 When multiple contracts share storage, they can overwrite each other's data. Additionally, in `delegatecall` contexts, `msg.sender` becomes the calling contract, not the original caller.
 
 ## The Solution
+
+┌─────────────┐   ┌───────────────────────┐   ┌──────────────────────┐   ┌─────────────────────┐
+│ 👤 EOA      │──▶│  📬 Dispatcher7702    │──▶│    📇 Hook Lookup     │──▶│   🔧 CounterHook ✅  │
+│ (Alice)     │   │ selector = 0x1234     │   │ 0x1234 → Counter     │   │ increment()          │
+│ via EIP7702 │   │ _SENDER_SLOT=Alice    │   │ 0xa905 → Token       │   └─────────────────────┘
+└─────────────┘   │ hooks[sel], delegate  │   │ 0xdead → Access      │
+                  └──────────────────────┘   └──────────────────────┘
+                                     │
+                                     ▼
+                         ┌────────────────────────────┐
+                         │     🔒 Storage Pattern     │
+                         │ base=keccak256("Counter")  │
+                         │ user = Alice.address       │
+                         │ slot=keccak256(base,user)  │
+                         │ ✅ per-user / per-hook     │
+                         └─────────────┬──────────────┘
+                                       ▼
+                          ┌──────────────────────────┐
+                          │   📦 Isolated Slot #5    │
+                          │ e.g. physical slot #5    │
+                          └──────────────────────────┘
+
+### Minimalistic Dispatcher
+We replace the “shared storage mess” with a single lightweight dispatcher that:
+1.	Routes calls to the correct hook based on the function selector
+(selector → hook address)
+2.	Preserves identity of the original caller via _SENDER_SLOT
+3.	Guarantees storage isolation by giving each hook a unique storage key:
+slot = keccak256(hookName, userAddress)
 
 ### Storage Isolation
 Each hook gets its own unique storage key:
