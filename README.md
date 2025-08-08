@@ -253,49 +253,6 @@ cd 7702-dispatcher
 ./demo/run_demo.sh
 ```
 
-#### Demo Flow - Step by Step
-
-The demo executes the following sequence of operations:
-
-**Phase 1: Setup & Deployment**
-1. **Start Anvil** - Local Ethereum node with Prague hardfork (EIP-7702 support)
-2. **Deploy Dispatcher** - Deploy the main `Dispatcher7702` contract
-3. **Deploy Hooks** - Deploy `CounterHook` and `TokenHook` contracts
-4. **Log Addresses** - Display all deployed contract addresses
-
-**Phase 2: EIP-7702 Delegation**
-5. **Attach Dispatcher to EOA** - Use `vm.signAndAttachDelegation()` to attach dispatcher code to Alice's EOA
-6. **Verify Delegation** - Confirm the EOA now has dispatcher functionality
-
-**Phase 3: Hook Configuration**
-7. **Set Counter Hook** - Configure `increment()` and `getValue()` selectors to point to `CounterHook`
-8. **Set Token Hook** - Configure `mint()` and `balanceOf()` selectors to point to `TokenHook`
-9. **Verify Hook Setup** - Confirm all function selectors are properly mapped
-
-**Phase 4: Basic Functionality Testing**
-10. **Test Counter Increment** - Call `increment()` through EOA with attached dispatcher
-11. **Verify Counter Value** - Check that counter value increased correctly
-12. **Test Token Mint** - Mint 1000 tokens to Alice's address
-13. **Verify Token Balance** - Confirm token balance is updated correctly
-
-**Phase 5: Storage Isolation Demonstration**
-14. **Increment Counter Again** - Call `increment()` to show counter persistence
-15. **Mint More Tokens** - Mint additional 500 tokens
-16. **Verify Both States** - Confirm both counter and token states are maintained independently
-17. **Final Counter Check** - Verify counter value is 3 (from 3 increments)
-18. **Final Token Check** - Verify token balance is 1500 (from 2 mints)
-
-**Phase 6: Storage Analysis**
-19. **Calculate Storage Keys** - Generate unique storage keys for each hook
-20. **Verify Key Uniqueness** - Confirm `CounterHook` and `TokenHook` use different storage slots
-21. **Read Storage Values** - Display actual storage slot values from the EOA
-22. **Confirm Isolation** - Verify no storage conflicts between hooks
-
-**Phase 7: Validation**
-23. **Storage Slot Analysis** - Show that hooks use isolated storage patterns
-24. **Final State Verification** - Confirm all operations completed successfully
-25. **Demo Completion** - Display success message with isolation confirmation
-
 #### Demo Output
 
 The demo will show:
@@ -332,32 +289,6 @@ forge test --match-contract AccessControlHookTest -v
 - ✅ **User Account Tests** (12 tests) - Real-world scenarios, account management
 - ✅ **Access Control Tests** (6 tests) - `_SENDER_SLOT` functionality, advanced patterns
 
-## Key Features
-
-### ✅ **Ultra-Minimal Design**
-- Clean, elegant dispatcher with minimal code
-- No unnecessary features or complexity
-- Gas-optimized assembly for core operations
-
-### ✅ **Storage Isolation**
-- Each hook has unique `STORAGE_KEY`
-- Complete isolation between hooks and users
-- No storage conflicts possible
-
-### ✅ **Advanced Access Control**
-- `_SENDER_SLOT` for preserving original caller
-- Proper access control in `delegatecall` contexts
-- Demonstrates advanced EIP-7702 patterns
-
-### ✅ **Production Ready**
-- Comprehensive test coverage (31 tests)
-- Proper error handling and events
-- Gas-optimized implementation
-
-### ✅ **Observability**
-- Detailed error messages with parameters
-- Events for hook management
-- Clear debugging information
 
 ## Usage Example
 
