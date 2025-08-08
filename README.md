@@ -14,6 +14,7 @@ If multiple hooks use the same storage slots (e.g., slot 0), they will overwrite
 
 Result: one piece of logic can accidentally (or maliciously) corrupt another’s state.
 
+```
 ┌──────────────────────────────┐        ┌──────────────────────────────┐
 │ 7702 Code Attached (X)       │        │ 7702 Code Attached (Y)        │				
 │ uses storage slot 0          │        │ also uses storage slot 0      │
@@ -28,12 +29,12 @@ Result: one piece of logic can accidentally (or maliciously) corrupt another’s
               │ Data from X replaced by data from Y  │
               └──────────────────────────────────────┘
 
-
+```
 
 When multiple contracts share storage, they can overwrite each other's data. Additionally, in `delegatecall` contexts, `msg.sender` becomes the calling contract, not the original caller.
 
 ## The Solution
-
+```
 ┌─────────────┐   ┌───────────────────────┐   ┌──────────────────────┐   ┌─────────────────────┐
 │ 👤 EOA      │──▶│  📬 Dispatcher7702    │──▶│    📇 Hook Lookup     │──▶│   🔧 CounterHook ✅  │
 │ (Alice)     │   │ selector = 0x1234     │   │ 0x1234 → Counter     │   │ increment()          │
@@ -54,6 +55,8 @@ When multiple contracts share storage, they can overwrite each other's data. Add
                           │   📦 Isolated Slot #5    │
                           │ e.g. physical slot #5    │
                           └──────────────────────────┘
+
+```
 
 ### Minimalistic Dispatcher
 We replace the “shared storage mess” with a single lightweight dispatcher that:
@@ -250,15 +253,48 @@ cd 7702-dispatcher
 ./demo/run_demo.sh
 ```
 
-#### What the Demo Does
+#### Demo Flow - Step by Step
 
-The demo script performs the following operations:
+The demo executes the following sequence of operations:
 
-1. **Starts Anvil** - Local Ethereum node with Prague hardfork (EIP-7702 support)
-2. **Deploys Contracts** - Dispatcher and hook contracts
-3. **Sets Up Hooks** - Configures function selectors to hook addresses
-4. **Tests Functionality** - Demonstrates storage isolation between hooks
-5. **Shows Storage Analysis** - Verifies that hooks use different storage slots
+**Phase 1: Setup & Deployment**
+1. **Start Anvil** - Local Ethereum node with Prague hardfork (EIP-7702 support)
+2. **Deploy Dispatcher** - Deploy the main `Dispatcher7702` contract
+3. **Deploy Hooks** - Deploy `CounterHook` and `TokenHook` contracts
+4. **Log Addresses** - Display all deployed contract addresses
+
+**Phase 2: EIP-7702 Delegation**
+5. **Attach Dispatcher to EOA** - Use `vm.signAndAttachDelegation()` to attach dispatcher code to Alice's EOA
+6. **Verify Delegation** - Confirm the EOA now has dispatcher functionality
+
+**Phase 3: Hook Configuration**
+7. **Set Counter Hook** - Configure `increment()` and `getValue()` selectors to point to `CounterHook`
+8. **Set Token Hook** - Configure `mint()` and `balanceOf()` selectors to point to `TokenHook`
+9. **Verify Hook Setup** - Confirm all function selectors are properly mapped
+
+**Phase 4: Basic Functionality Testing**
+10. **Test Counter Increment** - Call `increment()` through EOA with attached dispatcher
+11. **Verify Counter Value** - Check that counter value increased correctly
+12. **Test Token Mint** - Mint 1000 tokens to Alice's address
+13. **Verify Token Balance** - Confirm token balance is updated correctly
+
+**Phase 5: Storage Isolation Demonstration**
+14. **Increment Counter Again** - Call `increment()` to show counter persistence
+15. **Mint More Tokens** - Mint additional 500 tokens
+16. **Verify Both States** - Confirm both counter and token states are maintained independently
+17. **Final Counter Check** - Verify counter value is 3 (from 3 increments)
+18. **Final Token Check** - Verify token balance is 1500 (from 2 mints)
+
+**Phase 6: Storage Analysis**
+19. **Calculate Storage Keys** - Generate unique storage keys for each hook
+20. **Verify Key Uniqueness** - Confirm `CounterHook` and `TokenHook` use different storage slots
+21. **Read Storage Values** - Display actual storage slot values from the EOA
+22. **Confirm Isolation** - Verify no storage conflicts between hooks
+
+**Phase 7: Validation**
+23. **Storage Slot Analysis** - Show that hooks use isolated storage patterns
+24. **Final State Verification** - Confirm all operations completed successfully
+25. **Demo Completion** - Display success message with isolation confirmation
 
 #### Demo Output
 
